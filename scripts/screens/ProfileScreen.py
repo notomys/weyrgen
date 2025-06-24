@@ -589,7 +589,7 @@ class ProfileScreen(Screens):
         )
 
         self.profile_elements["cat_info_column3"] = UITextBoxTweaked(
-            self.generate_column2(self.the_cat),
+            self.generate_column3(self.the_cat),
             ui_scale(pygame.Rect((580, 220), (160, 200))),
             object_id=get_text_box_theme("#text_box_22_horizleft"),
             line_spacing=1,
@@ -719,47 +719,37 @@ class ProfileScreen(Screens):
         # NEWLINE ----------
         output += "\n"
 
-        # TODO: clean this up
-        # if the_cat.genderalign is None or the_cat.genderalign == the_cat.gender:
-        #     output += the_cat.get_gender_string()
-        # else:
-        #     output += the_cat.get_genderalign_string()
 
-        # NEWLINE ----------
-        # output += "\n"
+        # NUTRITION INFO (if the game is in the correct mode)
+        # TODO: figure out how you want to implement this
+        if (
+            game.clan.game_mode in ("expanded", "cruel season")
+            and the_cat.is_alive()
+            and FRESHKILL_ACTIVE
+        ):
+            # Check to only show nutrition for clan cats
+            if str(the_cat.status) not in (
+                "loner",
+                "kittypet",
+                "rogue",
+                "former Clancat",
+                "exiled",
+            ):
+                nutr = None
+                if the_cat.ID in game.clan.freshkill_pile.nutrition_info:
+                    nutr = game.clan.freshkill_pile.nutrition_info[the_cat.ID]
+                if not nutr:
+                    game.clan.freshkill_pile.add_cat_to_nutrition(the_cat)
+                    nutr = game.clan.freshkill_pile.nutrition_info[the_cat.ID]
+                output += i18n.t(
+                    "screens.clearing.nutrition_text",
+                    nutrition_text=nutr.nutrition_text,
+                )
+                if game.clan.clan_settings["showxp"]:
+                    output += " (" + str(int(nutr.percentage)) + ")"
+                output += "\n"
 
-        # AGE
-        # if the_cat.age == CatAgeEnum.KITTEN:
-        #     output += i18n.t("general.kitten_profile")
-        # elif the_cat.age == CatAgeEnum.SENIOR:
-        #     output += i18n.t(f"general.{the_cat.age.value}", count=1)
-        # else:
-        #     output += i18n.t(f"general.{the_cat.age.value}", count=1)
-        # # NEWLINE ----------
-        # output += "\n"
-
-        # # EYE COLOR
-        # output += i18n.t(
-        #     "screens.profile.eyes_label", eyes=the_cat.pelt.describe_eyes()
-        # )
-        # # NEWLINE ----------
-        # output += "\n"
-
-        # # PELT TYPE
-        # output += i18n.t(
-        #     "screens.profile.pelt_label",
-        #     pelt=i18n.t(f"cat.pelts.{the_cat.pelt.name}").lower(),
-        # )
-        # # NEWLINE ----------
-        # output += "\n"
-
-        # # PELT LENGTH
-        # output += i18n.t(
-        #     "screens.profile.fur_label",
-        #     length=i18n.t(f"cat.pelts.fur_{the_cat.pelt.length}"),
-        # )
-        # # NEWLINE ----------
-
+        # TODO: clean this up 
         # # ACCESSORY
         # if the_cat.pelt.accessory:
         #     output += "\n"
@@ -773,16 +763,6 @@ class ProfileScreen(Screens):
         #         ),
         #     )
         #     # NEWLINE ----------
-
-        # # PARENTS
-        # all_parents = [Cat.fetch_cat(i) for i in the_cat.get_parents()]
-        # if all_parents:
-        #     output += "\n"
-        #     output += i18n.t(
-        #         "screens.profile.parent_label",
-        #         count=len(all_parents),
-        #         parents=adjust_list_text([str(cat.name) for cat in all_parents]),
-        #     )
 
         # # MATE
         # if len(the_cat.mate) > 0:
@@ -874,8 +854,9 @@ class ProfileScreen(Screens):
             # NEWLINE ----------
             output += "\n"
         
-        # RIDER AGE
+        # RIDER AGE & GENDER
         # TODO: Add this to cat class, it can probably be calculated by age at impression + dragon age.
+        # TODO: add rider gender versus dragon color
         output += "\n"
         if the_cat.dead:
             output += i18n.t("general.moons_age_in_life", count=the_cat.moons)
@@ -883,6 +864,11 @@ class ProfileScreen(Screens):
             output += i18n.t("general.moons_age_in_death", count=the_cat.dead_for)
         else:
             output += i18n.t("general.moons_age", count=the_cat.moons)
+        output += " "
+        if the_cat.genderalign is None or the_cat.genderalign == the_cat.gender:
+            output += the_cat.get_gender_string()
+        else:
+            output += the_cat.get_genderalign_string()
         # NEWLINE ----------
         output += "\n"
 
@@ -892,6 +878,7 @@ class ProfileScreen(Screens):
         Weyrborn
         Holdborn
         Craftborn
+        Holdless Wanderer
         TODO: get rid of 'backstory:'
         '''
         bs_text = "this should not appear"
@@ -919,35 +906,73 @@ class ProfileScreen(Screens):
         # NEWLINE ----------
         output += "\n"
 
-        # # NUTRITION INFO (if the game is in the correct mode)
-        # TODO: move this to generate column 3
-        # if (
-        #     game.clan.game_mode in ("expanded", "cruel season")
-        #     and the_cat.is_alive()
-        #     and FRESHKILL_ACTIVE
-        # ):
-        #     # Check to only show nutrition for clan cats
-        #     if str(the_cat.status) not in (
-        #         "loner",
-        #         "kittypet",
-        #         "rogue",
-        #         "former Clancat",
-        #         "exiled",
-        #     ):
-        #         nutr = None
-        #         if the_cat.ID in game.clan.freshkill_pile.nutrition_info:
-        #             nutr = game.clan.freshkill_pile.nutrition_info[the_cat.ID]
-        #         if not nutr:
-        #             game.clan.freshkill_pile.add_cat_to_nutrition(the_cat)
-        #             nutr = game.clan.freshkill_pile.nutrition_info[the_cat.ID]
-        #         output += i18n.t(
-        #             "screens.clearing.nutrition_text",
-        #             nutrition_text=nutr.nutrition_text,
-        #         )
-        #         if game.clan.clan_settings["showxp"]:
-        #             output += " (" + str(int(nutr.percentage)) + ")"
-        #         output += "\n"
         return output
+    
+    def generate_column3(self, the_cat):
+        """Generate information about the dragon"""
+        output = ""
+        # DRAGON NAME
+        #TODO: name generation - this can be simplified from the way that cats are generated
+        output += "Biggeth"
+        # NEWLINE ----------
+        output += "\n"
+
+        # DRAGON APPEARANCE
+        #TODO: color and flavor appearance generation. Consider using rank for color. 
+        #TODO: remove labels from this text
+        # right now it is just using the coat colors and eyes. Maybe "color & markings"
+        output += ""
+        output += i18n.t(
+            "screens.profile.eyes_label", eyes=the_cat.pelt.describe_eyes()
+        ) + "ish brown with "
+        output += i18n.t(
+            "screens.profile.pelt_label",
+            pelt=i18n.t(f"cat.pelts.{the_cat.pelt.name}").lower(),
+        ) + " markings."
+        # NEWLINE ----------
+        output += "\n"
+
+        # CLUTCH
+        # TODO: remove notion of adopted parents.
+        # TODO: simplify this section of the code.
+        # TODO: time code should be updated, this will get complicated quickkly so can be postponed until after MVP.
+        all_parents = [Cat.fetch_cat(i) for i in the_cat.get_parents()]
+        if all_parents:
+            output += "\n"
+            output += i18n.t(
+                "screens.profile.parent_label",
+                count=len(all_parents),
+                parents=adjust_list_text([str(cat.name) for cat in all_parents]),
+            )
+        output += " T12 P5"
+
+        # DRAGON AGE
+        output += "\n"
+        if the_cat.dead:
+            output += i18n.t("general.moons_age_in_life", count=the_cat.moons)
+            output += "\n"
+            output += i18n.t("general.moons_age_in_death", count=the_cat.dead_for)
+        else:
+            output += i18n.t("general.moons_age", count=the_cat.moons)
+        # NEWLINE ----------
+        output += "\n"
+
+        # DRAGON LENGTH
+        # TODO: implement dragon length, this is just for flavor
+        output += i18n.t(
+            "screens.profile.fur_label",
+            length=i18n.t(f"cat.pelts.fur_{the_cat.pelt.length}"),
+        )
+        # NEWLINE ----------
+        output += "\n"
+
+        # DRAGON PERSONALITY
+        output += i18n.t(f"cat.personality.{the_cat.personality.trait}")
+        # NEWLINE ----------
+        output += "\n"
+
+        return output
+
 
     def toggle_history_tab(self, sub_tab_switch=False):
         """Opens the history tab
