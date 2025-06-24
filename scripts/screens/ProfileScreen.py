@@ -119,6 +119,7 @@ class ProfileScreen(Screens):
         self.next_cat = None
         self.cat_image = None
         self.background = None
+        self.cat_info_column3 = None
         self.cat_info_column2 = None
         self.cat_info_column1 = None
         self.cat_thought = None
@@ -574,14 +575,22 @@ class ProfileScreen(Screens):
 
         self.profile_elements["cat_info_column1"] = UITextBoxTweaked(
             self.generate_column1(self.the_cat),
-            ui_scale(pygame.Rect((300, 220), (180, 200))),
+            ui_scale(pygame.Rect((250, 220), (160, 200))),
             object_id=get_text_box_theme("#text_box_22_horizleft"),
             line_spacing=1,
             manager=MANAGER,
         )
         self.profile_elements["cat_info_column2"] = UITextBoxTweaked(
             self.generate_column2(self.the_cat),
-            ui_scale(pygame.Rect((490, 220), (250, 200))),
+            ui_scale(pygame.Rect((420, 220), (160, 200))),
+            object_id=get_text_box_theme("#text_box_22_horizleft"),
+            line_spacing=1,
+            manager=MANAGER,
+        )
+
+        self.profile_elements["cat_info_column3"] = UITextBoxTweaked(
+            self.generate_column2(self.the_cat),
+            ui_scale(pygame.Rect((580, 220), (160, 200))),
             object_id=get_text_box_theme("#text_box_22_horizleft"),
             line_spacing=1,
             manager=MANAGER,
@@ -590,7 +599,7 @@ class ProfileScreen(Screens):
         # Set the cat backgrounds.
         if game.clan.clan_settings["backgrounds"]:
             self.profile_elements["background"] = pygame_gui.elements.UIImage(
-                ui_scale(pygame.Rect((55, 200), (240, 210))),
+                ui_scale(pygame.Rect((20, 200), (240, 210))),
                 pygame.transform.scale(
                     self.get_platform(), ui_scale_dimensions((240, 210))
                 ),
@@ -678,212 +687,24 @@ class ProfileScreen(Screens):
                 self.profile_elements["mediation"].disable()
 
     def generate_column1(self, the_cat):
-        """Generate the left column information"""
+        """Generate the rank information column"""
         output = ""
-        # SEX/GENDER
-        if the_cat.genderalign is None or the_cat.genderalign == the_cat.gender:
-            output += the_cat.get_gender_string()
-        else:
-            output += the_cat.get_genderalign_string()
-        # NEWLINE ----------
+        # RANK/ASSIGNMENT
+        '''
+        TODO: in clangen, "status" is the equivilent, it's a bit loaded, since it also includes things like
+        being a kitten. Consider whether I want to bake this in, or tease it out
+        TODO: it may be good to make the way we call these items consistent (getters/setters). This is a lower priority
+        '''
+        output += i18n.t(f"general.{the_cat.status}", count=1)
+        output += " - "
+        output += "Weyrling's Wing"
+       # NEWLINE ----------
         output += "\n"
 
-        # AGE
-        if the_cat.age == CatAgeEnum.KITTEN:
-            output += i18n.t("general.kitten_profile")
-        elif the_cat.age == CatAgeEnum.SENIOR:
-            output += i18n.t(f"general.{the_cat.age.value}", count=1)
-        else:
-            output += i18n.t(f"general.{the_cat.age.value}", count=1)
-        # NEWLINE ----------
-        output += "\n"
-
-        # EYE COLOR
-        output += i18n.t(
-            "screens.profile.eyes_label", eyes=the_cat.pelt.describe_eyes()
-        )
-        # NEWLINE ----------
-        output += "\n"
-
-        # PELT TYPE
-        output += i18n.t(
-            "screens.profile.pelt_label",
-            pelt=i18n.t(f"cat.pelts.{the_cat.pelt.name}").lower(),
-        )
-        # NEWLINE ----------
-        output += "\n"
-
-        # PELT LENGTH
-        output += i18n.t(
-            "screens.profile.fur_label",
-            length=i18n.t(f"cat.pelts.fur_{the_cat.pelt.length}"),
-        )
-        # NEWLINE ----------
-
-        # ACCESSORY
-        if the_cat.pelt.accessory:
-            output += "\n"
-            output += i18n.t(
-                "screens.profile.accessory_label",
-                accessory=adjust_list_text(
-                    [
-                        i18n.t(f"cat.accessories.{acc}", count=0)
-                        for acc in the_cat.pelt.accessory
-                    ]
-                ),
-            )
-            # NEWLINE ----------
-
-        # PARENTS
-        all_parents = [Cat.fetch_cat(i) for i in the_cat.get_parents()]
-        if all_parents:
-            output += "\n"
-            output += i18n.t(
-                "screens.profile.parent_label",
-                count=len(all_parents),
-                parents=adjust_list_text([str(cat.name) for cat in all_parents]),
-            )
-
-        # MOONS
-        output += "\n"
-        if the_cat.dead:
-            output += i18n.t("general.moons_age_in_life", count=the_cat.moons)
-            output += "\n"
-            output += i18n.t("general.moons_age_in_death", count=the_cat.dead_for)
-        else:
-            output += i18n.t("general.moons_age", count=the_cat.moons)
-        # MATE
-        if len(the_cat.mate) > 0:
-            output += "\n"
-
-            mate_names = []
-            # Grab the names of only the first two, since that's all we will display
-            for _m in the_cat.mate[:2]:
-                mate_ob = Cat.fetch_cat(_m)
-                if not isinstance(mate_ob, Cat):
-                    continue
-                if mate_ob.dead != self.the_cat.dead:
-                    if the_cat.dead:
-                        former_indicate = "general.mate_living"
-                    else:
-                        former_indicate = "general.mate_dead"
-
-                    mate_names.append(f"{str(mate_ob.name)} {i18n.t(former_indicate)}")
-                elif mate_ob.outside != self.the_cat.outside:
-                    mate_names.append(
-                        f"{str(mate_ob.name)} {i18n.t('general.mate_away')}"
-                    )
-                else:
-                    mate_names.append(f"{str(mate_ob.name)}")
-
-            mate_block = ", ".join(mate_names)
-
-            if len(the_cat.mate) > 2:
-                mate_block = i18n.t(
-                    "utility.items",
-                    count=2,
-                    item1=mate_block,
-                    item2=i18n.t("general.mate_extra", count=len(the_cat.mate) - 2),
-                )
-
-            output += i18n.t(
-                "general.mate_label", count=len(mate_names), mates=mate_block
-            )
-
-        if not the_cat.dead:
-            # NEWLINE ----------
-            output += "\n"
-
-        return output
-
-    def generate_column2(self, the_cat):
-        """Generate the right column information"""
-        output = ""
-
-        # STATUS
-        if (
-            the_cat.outside
-            and not the_cat.exiled
-            and the_cat.status not in ("kittypet", "loner", "rogue", "former Clancat")
-        ):
-            output += f"<font color='#FF0000'>{i18n.t('general.lost', count=1)}</font>"
-        elif the_cat.exiled:
-            output += (
-                f"<font color='#FF0000'>{i18n.t('general.exiled', count=1)}</font>"
-            )
-        else:
-            output += i18n.t(f"general.{the_cat.status}", count=1)
-
-        # NEWLINE ----------
-        output += "\n"
-
-        # LEADER LIVES:
-        # Optional - Only shows up for leaders
-        if not the_cat.dead and "leader" in the_cat.status:
-            output += i18n.t(
-                "screens.profile.lives_remaining_label", count=game.clan.leader_lives
-            )
-            # NEWLINE ----------
-            output += "\n"
-
-        # MENTOR
-        # Only shows up if the cat has a mentor.
-        if the_cat.mentor:
-            mentor_ob = Cat.fetch_cat(the_cat.mentor)
-            if mentor_ob:
-                output += i18n.t("general.mentor_label", mentor=mentor_ob.name) + "\n"
-
-        # CURRENT APPRENTICES
-        # Optional - only shows up if the cat has an apprentice currently
-        if the_cat.apprentice:
-            apps = [
-                str(Cat.fetch_cat(i).name)
-                for i in the_cat.apprentice
-                if Cat.fetch_cat(i)
-            ]
-            if len(apps) > 0:
-                output += i18n.t(
-                    "general.apprentice_label",
-                    count=len(apps),
-                    apprentices=adjust_list_text(apps),
-                )
-                # NEWLINE ----------
-                output += "\n"
-
-        # FORMER APPRENTICES
-        # Optional - Only shows up if the cat has previous apprentice(s)
-        if the_cat.former_apprentices:
-            apprentices = [
-                str(Cat.fetch_cat(i).name)
-                for i in the_cat.former_apprentices
-                if isinstance(Cat.fetch_cat(i), Cat)
-            ]
-
-            if len(apprentices) > 2:
-                apps = [i for i in apprentices[:2]]
-                apps.append(
-                    i18n.t("general.apprentice_extra", count=len(apprentices) - 2)
-                )
-                apps = apps
-            else:
-                apps = apprentices
-
-            if len(apps) > 0:
-                output += i18n.t(
-                    "general.former_apprentice_label",
-                    count=len(apps),
-                    apprentices=adjust_list_text(apps),
-                )
-
-            # NEWLINE ----------
-            output += "\n"
-
-        # CHARACTER TRAIT
-        output += i18n.t(f"cat.personality.{the_cat.personality.trait}")
-        # NEWLINE ----------
-        output += "\n"
-
-        # CAT SKILLS
+        '''
+        TODO: Reflavor these skills to be dragonridered.
+        '''
+        # PAIR SKILLS
         output += the_cat.skills.skill_string()
         # NEWLINE ----------
         output += "\n"
@@ -898,47 +719,125 @@ class ProfileScreen(Screens):
         # NEWLINE ----------
         output += "\n"
 
-        # BACKSTORY
-        bs_text = "this should not appear"
-        if the_cat.status in ("kittypet", "loner", "rogue", "former Clancat"):
-            bs_text = the_cat.status
-        else:
-            if the_cat.backstory:
-                bs_text = backstory_text(the_cat)
-            else:
-                bs_text = i18n.t("cat.backstories.clanborn_backstories")
-        output += i18n.t("screens.profile.backstory_label", backstory=bs_text)
+        # TODO: clean this up
+        # if the_cat.genderalign is None or the_cat.genderalign == the_cat.gender:
+        #     output += the_cat.get_gender_string()
+        # else:
+        #     output += the_cat.get_genderalign_string()
+
         # NEWLINE ----------
-        output += "\n"
+        # output += "\n"
 
-        # NUTRITION INFO (if the game is in the correct mode)
-        if (
-            game.clan.game_mode in ("expanded", "cruel season")
-            and the_cat.is_alive()
-            and FRESHKILL_ACTIVE
-        ):
-            # Check to only show nutrition for clan cats
-            if str(the_cat.status) not in (
-                "loner",
-                "kittypet",
-                "rogue",
-                "former Clancat",
-                "exiled",
-            ):
-                nutr = None
-                if the_cat.ID in game.clan.freshkill_pile.nutrition_info:
-                    nutr = game.clan.freshkill_pile.nutrition_info[the_cat.ID]
-                if not nutr:
-                    game.clan.freshkill_pile.add_cat_to_nutrition(the_cat)
-                    nutr = game.clan.freshkill_pile.nutrition_info[the_cat.ID]
-                output += i18n.t(
-                    "screens.clearing.nutrition_text",
-                    nutrition_text=nutr.nutrition_text,
-                )
-                if game.clan.clan_settings["showxp"]:
-                    output += " (" + str(int(nutr.percentage)) + ")"
-                output += "\n"
+        # AGE
+        # if the_cat.age == CatAgeEnum.KITTEN:
+        #     output += i18n.t("general.kitten_profile")
+        # elif the_cat.age == CatAgeEnum.SENIOR:
+        #     output += i18n.t(f"general.{the_cat.age.value}", count=1)
+        # else:
+        #     output += i18n.t(f"general.{the_cat.age.value}", count=1)
+        # # NEWLINE ----------
+        # output += "\n"
 
+        # # EYE COLOR
+        # output += i18n.t(
+        #     "screens.profile.eyes_label", eyes=the_cat.pelt.describe_eyes()
+        # )
+        # # NEWLINE ----------
+        # output += "\n"
+
+        # # PELT TYPE
+        # output += i18n.t(
+        #     "screens.profile.pelt_label",
+        #     pelt=i18n.t(f"cat.pelts.{the_cat.pelt.name}").lower(),
+        # )
+        # # NEWLINE ----------
+        # output += "\n"
+
+        # # PELT LENGTH
+        # output += i18n.t(
+        #     "screens.profile.fur_label",
+        #     length=i18n.t(f"cat.pelts.fur_{the_cat.pelt.length}"),
+        # )
+        # # NEWLINE ----------
+
+        # # ACCESSORY
+        # if the_cat.pelt.accessory:
+        #     output += "\n"
+        #     output += i18n.t(
+        #         "screens.profile.accessory_label",
+        #         accessory=adjust_list_text(
+        #             [
+        #                 i18n.t(f"cat.accessories.{acc}", count=0)
+        #                 for acc in the_cat.pelt.accessory
+        #             ]
+        #         ),
+        #     )
+        #     # NEWLINE ----------
+
+        # # PARENTS
+        # all_parents = [Cat.fetch_cat(i) for i in the_cat.get_parents()]
+        # if all_parents:
+        #     output += "\n"
+        #     output += i18n.t(
+        #         "screens.profile.parent_label",
+        #         count=len(all_parents),
+        #         parents=adjust_list_text([str(cat.name) for cat in all_parents]),
+        #     )
+
+        # # MATE
+        # if len(the_cat.mate) > 0:
+        #     output += "\n"
+
+        #     mate_names = []
+        #     # Grab the names of only the first two, since that's all we will display
+        #     for _m in the_cat.mate[:2]:
+        #         mate_ob = Cat.fetch_cat(_m)
+        #         if not isinstance(mate_ob, Cat):
+        #             continue
+        #         if mate_ob.dead != self.the_cat.dead:
+        #             if the_cat.dead:
+        #                 former_indicate = "general.mate_living"
+        #             else:
+        #                 former_indicate = "general.mate_dead"
+
+        #             mate_names.append(f"{str(mate_ob.name)} {i18n.t(former_indicate)}")
+        #         elif mate_ob.outside != self.the_cat.outside:
+        #             mate_names.append(
+        #                 f"{str(mate_ob.name)} {i18n.t('general.mate_away')}"
+        #             )
+        #         else:
+        #             mate_names.append(f"{str(mate_ob.name)}")
+
+        #     mate_block = ", ".join(mate_names)
+
+        #     if len(the_cat.mate) > 2:
+        #         mate_block = i18n.t(
+        #             "utility.items",
+        #             count=2,
+        #             item1=mate_block,
+        #             item2=i18n.t("general.mate_extra", count=len(the_cat.mate) - 2),
+        #         )
+
+        #     output += i18n.t(
+        #         "general.mate_label", count=len(mate_names), mates=mate_block
+        #     )
+
+        # if not the_cat.dead:
+        #     # NEWLINE ----------
+        #     output += "\n"
+
+        return output
+
+    def generate_column2(self, the_cat):
+        """Generate information about the rider"""
+        output = ""
+
+        # RIDER NAME
+        output += "R'der"
+
+        # RIDER CONDITIONS
+        # TODO: pull these out from the base model and make them their own thing.
+        # TODO: I would expect to have to put a newline here, but I don't. Figure out why.
         if the_cat.is_disabled():
             for condition in the_cat.permanent_condition:
                 if (
@@ -947,7 +846,6 @@ class ProfileScreen(Screens):
                 ):
                     continue
                 output += i18n.t("general.has_permanent_condition")
-
                 # NEWLINE ----------
                 output += "\n"
                 break
@@ -964,6 +862,8 @@ class ProfileScreen(Screens):
                 )
             else:
                 output += i18n.t("utility.exclamation", text=i18n.t("general.injured"))
+            # NEWLINE ----------
+            output += "\n"
         elif the_cat.is_ill():
             if "grief stricken" in the_cat.illnesses:
                 output += i18n.t("utility.exclamation", text=i18n.t("general.grieving"))
@@ -971,7 +871,82 @@ class ProfileScreen(Screens):
                 output += i18n.t("utility.exclamation", text=i18n.t("general.fleas"))
             else:
                 output += i18n.t("utility.exclamation", text=i18n.t("general.sick"))
+            # NEWLINE ----------
+            output += "\n"
+        
+        # RIDER AGE
+        # TODO: Add this to cat class, it can probably be calculated by age at impression + dragon age.
+        output += "\n"
+        if the_cat.dead:
+            output += i18n.t("general.moons_age_in_life", count=the_cat.moons)
+            output += "\n"
+            output += i18n.t("general.moons_age_in_death", count=the_cat.dead_for)
+        else:
+            output += i18n.t("general.moons_age", count=the_cat.moons)
+        # NEWLINE ----------
+        output += "\n"
 
+        # BACKSTORY
+        '''
+        TODO: Change the options here to
+        Weyrborn
+        Holdborn
+        Craftborn
+        TODO: get rid of 'backstory:'
+        '''
+        bs_text = "this should not appear"
+        if the_cat.status in ("kittypet", "loner", "rogue", "former Clancat"):
+            bs_text = the_cat.status
+        else:
+            if the_cat.backstory:
+                bs_text = backstory_text(the_cat)
+            else:
+                bs_text = i18n.t("cat.backstories.clanborn_backstories")
+        output += i18n.t("screens.profile.backstory_label", backstory=bs_text)
+        # NEWLINE ----------
+        output += "\n"
+
+        # CHARACTER TRAIT
+        output += i18n.t(f"cat.personality.{the_cat.personality.trait}")
+        # NEWLINE ----------
+        output += "\n"
+
+        # RIDER APPEARANCE
+        # TODO: set this up in the cat model.
+        output += "very dark brown" + " skin with "
+        output += "curly" + " " + "graying platinum blonde" + " eyes. "
+        output += "Stands " + "much taller" + " than average with a " + "heavyset" + " build."
+        # NEWLINE ----------
+        output += "\n"
+
+        # # NUTRITION INFO (if the game is in the correct mode)
+        # TODO: move this to generate column 3
+        # if (
+        #     game.clan.game_mode in ("expanded", "cruel season")
+        #     and the_cat.is_alive()
+        #     and FRESHKILL_ACTIVE
+        # ):
+        #     # Check to only show nutrition for clan cats
+        #     if str(the_cat.status) not in (
+        #         "loner",
+        #         "kittypet",
+        #         "rogue",
+        #         "former Clancat",
+        #         "exiled",
+        #     ):
+        #         nutr = None
+        #         if the_cat.ID in game.clan.freshkill_pile.nutrition_info:
+        #             nutr = game.clan.freshkill_pile.nutrition_info[the_cat.ID]
+        #         if not nutr:
+        #             game.clan.freshkill_pile.add_cat_to_nutrition(the_cat)
+        #             nutr = game.clan.freshkill_pile.nutrition_info[the_cat.ID]
+        #         output += i18n.t(
+        #             "screens.clearing.nutrition_text",
+        #             nutrition_text=nutr.nutrition_text,
+        #         )
+        #         if game.clan.clan_settings["showxp"]:
+        #             output += " (" + str(int(nutr.percentage)) + ")"
+        #         output += "\n"
         return output
 
     def toggle_history_tab(self, sub_tab_switch=False):

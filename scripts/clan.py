@@ -474,7 +474,7 @@ class Clan:
         clan_data = {
             "clanname": self.name,
             "clanage": self.age,
-            "biome": self.biome,
+            "biome": self.biome, 
             "camp_bg": self.camp_bg,
             "clan_symbol": self.chosen_symbol,
             "gamemode": self.game_mode,

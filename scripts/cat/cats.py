@@ -1,5 +1,7 @@
 """
 Contains the Cat and Personality classes
+We will be using this as the base class for sapient characters. 
+Dragons and riders will probably be classed together and treated as a pair.
 """
 
 from __future__ import annotations
@@ -61,6 +63,17 @@ class Cat:
     used_screen = screen
     current_pronoun_lang = None
 
+    """
+    #TODO: refactor to use the following
+    Hatchling : 0 - 5
+    Fledgling : 6 - 11
+    Adolescent : 12 - 16
+    Young Adult : 17 - 24
+    Adult: 24 - 220 (55 years)
+    Senior Adult: 221 - 260 (56 - 65 years)
+    Senior: 261+ (66+ years)
+    TODO: Currently this is in months, consider if it makes sense to keep it that way.
+    """
     age_moons = {
         CatAgeEnum.NEWBORN: game.config["cat_ages"]["newborn"],
         CatAgeEnum.KITTEN: game.config["cat_ages"]["kitten"],
@@ -72,6 +85,21 @@ class Cat:
     }
 
     # This in is in reverse order: top of the list at the bottom
+    """
+    #TODO: refactor rank to include the following
+    Junior Weyrling
+    Senior Weyrling
+    Dragonhealer Apprentice
+    Wingrider
+    Wingthird
+    Wingsecond
+    Wingleader
+    Dragonhealer
+    Junior Weyrwoman
+    Weyrleader
+    Senior Weyrwoman
+    """
+
     rank_sort_order = [
         "newborn",
         "kitten",
@@ -115,6 +143,7 @@ class Cat:
         gender=None,
         status="newborn",
         backstory="clanborn",
+        color="green",
         parent1=None,
         parent2=None,
         adoptive_parents=None,
@@ -530,7 +559,7 @@ class Cat:
             # possibly old-style pronouns
             self._pronouns[i18n.config.get("locale")] = val
             return
-
+        
     def get_genderalign_string(self):
         # translate it if it's default
         if self.genderalign in (

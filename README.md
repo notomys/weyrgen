@@ -1,24 +1,20 @@
-# clangen
-
-### [Discord Server](https://discord.gg/clangen) || [Official website](https://clangen.io) || [Itch.io Page](https://sablesteel.itch.io/clan-gen-fan-edit) 
+# Weyrgen
 
 ## Description
-Fan-edit of the warrior cat clangen game built using Python and Pygame.
+A dragonriders of pern inspired fan-edit of the of the warrior cat clangen game built using Python and Pygame. This is very much a WIP and partially just an effort to kick the ole coding tires again. 
+
+Note that this is a pern-inspired game, there may be discrepencies between this game and the source material.
 
 ## Credits
 Original creator: just-some-cat.tumblr.com
-
 Fan-edit creator: SableSteel, and many others
 
 ## Downloads
 ### Stable
-Stable versions can be downloaded directly from the [official ClanGen website](https://clangen.io/download)
-
+Currently does not have a stable release 
 ### Development
 **Note**: Development versions are automatic snapshots of current development efforts. They are _not_ stable, can crash and even corrupt your save files.
 Additionally, we do not provide tech support for development versions.
-
-Download at your own risk here: [ClanGen development download](https://clangen.io/download-development)
 
 ## Running from source
 > [!WARNING]
