@@ -98,6 +98,7 @@ class Cat:
     Junior Weyrwoman
     Weyrleader
     Senior Weyrwoman
+    #TODO: update messages in resources/lang/en/screens/role.end.json
     """
 
     rank_sort_order = [
@@ -105,6 +106,7 @@ class Cat:
         "kitten",
         "elder",
         "apprentice",
+        "wingrider",
         "warrior",
         "mediator apprentice",
         "mediator",

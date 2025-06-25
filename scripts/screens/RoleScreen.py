@@ -154,6 +154,13 @@ class RoleScreen(Screens):
             object_id="@buttonstyles_ladder_middle",
             anchors={"top_target": self.promote_leader},
         )
+        self.promote_wingthird = UISurfaceImageButton(
+            ui_scale(pygame.Rect((48, 0), (172, 36))),
+            "screens.role.promote_wingthird",
+            get_button_dict(ButtonStyles.LADDER_MIDDLE, (172, 36)),
+            object_id="@buttonstyles_ladder_middle",
+            anchors={"top_target": self.promote_deputy},
+        )
 
         # ADULT CAT ROLES
         self.switch_warrior = UISurfaceImageButton(
@@ -545,6 +552,8 @@ class RoleScreen(Screens):
         del self.promote_leader
         self.promote_deputy.kill()
         del self.promote_deputy
+        self.promote_wingthird.kill()
+        del self.promote_wingthird
         self.switch_warrior.kill()
         del self.switch_warrior
         self.switch_med_cat.kill()
