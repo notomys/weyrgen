@@ -17,6 +17,18 @@
             "one": "leader",
             "many": "leaders"
         },
+        "wingleader": {
+            "one": "wingleader",
+            "many": "wingleaders"
+        },
+        "wingsecond": {
+            "one": "wingsecond",
+            "many": "wingseconds"
+        },
+        "wingthird": {
+            "one": "wingthird",
+            "many": "wingthirds"
+        },
         "deputy": {
             "one": "deputy",
             "many": "deputies"

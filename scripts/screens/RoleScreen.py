@@ -62,6 +62,19 @@ class RoleScreen(Screens):
                 game.clan.deputy = self.the_cat
                 self.the_cat.status_change("deputy", resort=True)
                 self.update_selected_cat()
+            # DRAGON LEADERSHIP
+            elif event.ui_element == self.promote_wingleader:
+                game.clan.deputy = self.the_cat
+                self.the_cat.status_change("wingleader", resort=True)
+                self.update_selected_cat()
+            elif event.ui_element == self.promote_wingsecond:
+                game.clan.deputy = self.the_cat
+                self.the_cat.status_change("wingsecond", resort=True)
+                self.update_selected_cat()
+            elif event.ui_element == self.promote_wingthird:
+                game.clan.deputy = self.the_cat
+                self.the_cat.status_change("wingthird", resort=True)
+                self.update_selected_cat()
             elif event.ui_element == self.switch_warrior:
                 self.the_cat.status_change("warrior", resort=True)
                 self.update_selected_cat()
@@ -154,12 +167,26 @@ class RoleScreen(Screens):
             object_id="@buttonstyles_ladder_middle",
             anchors={"top_target": self.promote_leader},
         )
+        self.promote_wingleader = UISurfaceImageButton(
+            ui_scale(pygame.Rect((48, 0), (172, 36))),
+            "screens.role.promote_wingleader",
+            get_button_dict(ButtonStyles.LADDER_MIDDLE, (172, 36)),
+            object_id="@buttonstyles_ladder_middle",
+            anchors={"top_target": self.promote_deputy},
+        )
+        self.promote_wingsecond = UISurfaceImageButton(
+            ui_scale(pygame.Rect((48, 0), (172, 36))),
+            "screens.role.promote_wingsecond",
+            get_button_dict(ButtonStyles.LADDER_MIDDLE, (172, 36)),
+            object_id="@buttonstyles_ladder_middle",
+            anchors={"top_target": self.promote_wingleader},
+        )
         self.promote_wingthird = UISurfaceImageButton(
             ui_scale(pygame.Rect((48, 0), (172, 36))),
             "screens.role.promote_wingthird",
             get_button_dict(ButtonStyles.LADDER_MIDDLE, (172, 36)),
             object_id="@buttonstyles_ladder_middle",
-            anchors={"top_target": self.promote_deputy},
+            anchors={"top_target": self.promote_wingsecond},
         )
 
         # ADULT CAT ROLES
@@ -335,6 +362,7 @@ class RoleScreen(Screens):
     def update_disabled_buttons(self):
         self.update_previous_next_cat_buttons()
 
+        #TODO: Add logic for the wings here
         if game.clan.leader:
             leader_invalid = game.clan.leader.dead or game.clan.leader.outside
         else:
@@ -496,6 +524,19 @@ class RoleScreen(Screens):
             self.switch_med_app.disable()
             self.switch_warrior_app.disable()
             self.switch_mediator_app.disable()
+        # DRAGON DOLES
+        elif self.the_cat.status == "wingleader":
+            self.promote_wingleader.disable()
+            self.promote_wingsecond.enable()
+            self.promote_wingthird.enable()
+        elif self.the_cat.status == "wingsecond":
+            self.promote_wingleader.enable()
+            self.promote_wingsecond.disable()
+            self.promote_wingthird.enable()
+        elif self.the_cat.status == "wingthird":
+            self.promote_wingleader.enable()
+            self.promote_wingsecond.enable()
+            self.promote_wingthird.disable()
         else:
             self.promote_leader.disable()
             self.promote_deputy.disable()
@@ -512,7 +553,13 @@ class RoleScreen(Screens):
             self.switch_mediator_app.disable()
 
     def get_role_blurb(self):
-        if self.the_cat.status == "warrior":
+        if self.the_cat.status == "wingleader":
+            output = "screens.role.blurb_wingleader"
+        elif self.the_cat.status == "wingsecond":
+            output = "screens.role.blurb_wingsecond"
+        elif self.the_cat.status == "wingthird":
+            output = "screens.role.blurb_wingthird"
+        elif self.the_cat.status == "warrior":
             output = "screens.role.blurb_warrior"
         elif self.the_cat.status == "leader":
             output = "screens.role.blurb_leader"
@@ -552,6 +599,11 @@ class RoleScreen(Screens):
         del self.promote_leader
         self.promote_deputy.kill()
         del self.promote_deputy
+        # DRAGONRIDER LEADERSHIP
+        self.promote_wingleader.kill()
+        del self.promote_wingleader
+        self.promote_wingsecond.kill()
+        del self.promote_wingsecond
         self.promote_wingthird.kill()
         del self.promote_wingthird
         self.switch_warrior.kill()

@@ -1,7 +1,11 @@
 {
     "en": {
-        "promote_wingthird": "promote to Wingthird",
-        "blurb_wingthird": "%{name} is the <b>Wingthird</b> of Some Wing. The Wingthird is third in command and substitutes for the Wingsecond in case of injury. They coordinate with the other wingleaders to assist with recruitment, training and wing formations. Any color can hold this role.",
+        "promote_wingleader": "promote to wingleader",
+        "blurb_wingleader": "%{name} is the <b>wingleader</b> of CHANGEME Wing. Oversees and coordinates all of the dragonpairs in a Wing. They are responsible for selecting Wing formation during Threadfall, organizing drills & training exercises, and selecting new wingriders from graduating classes. Traditionally this role is limited to bronze or brownriders.",
+        "promote_wingsecond": "promote to wingsecond",
+        "blurb_wingsecond": "%{name} is the <b>wingsecond</b> of CHANGEME Wing. Second in command under the windleader. Assists with the management of a wing, including leading drills and exercises. Leads the wing in the event the wingleader is injured. Traditionally this role is limited to bronze or brownriders.",
+        "promote_wingthird": "promote to wingthird",
+        "blurb_wingthird": "%{name} is the <b>Wingthird</b> of CHANGEME Wing. The Wingthird is third in command and substitutes for the Wingsecond in case of injury. They coordinate with the other wingleaders to assist with recruitment, training and wing formations. Any color can hold this role.",
         "promote_leader": "promote to leader",
         "blurb_leader": "%{name} is the <b>leader</b> of %{clan}Clan. The guardianship of all Clan cats has been entrusted to them by StarClan. The leader is the highest authority in the Clan. The leader holds Clan meetings, determines mentors for new apprentices, and names new warriors. To help them protect the Clan, StarClan has given them nine lives. They typically take the suffix \"star\".",
         "promote_deputy": "promote to deputy",
