@@ -1,0 +1,29 @@
+version: 1
+description: >
+  Canonical term mappings for the planned terminology cleanup (Warrior Cats -> Pern).
+  This file is the single source of truth for the first, minimal iteration.
+mappings:
+  - legacy: "clan"
+    replacement: "weyr"
+    rationale: "Use 'weyr' for site/organization concepts and for directories/classes that represent the community of riders/dragons."
+
+  - legacy: "cat"
+    replacement: "weyrfolk"
+    rationale: "Use 'weyrfolk' as a generic term for a human who lives in the weyr; preserves human-focused language rather than species name."
+
+  - legacy: "kit"
+    replacement: "weyrbrat"
+    rationale: "Kit (young cat) -> weyrbrat (young person in the weyr). This is a human-focused juvenile term used in data schemas and names for juvenile entities."
+
+  - legacy: "apprentice"
+    replacement: "apprentice"
+    rationale: "Leave 'apprentice' unchanged for now per project owner preference. Included here for completeness."
+
+  - legacy: "warrior"
+    replacement: "dragonrider"
+    rationale: "Warrior (combat role) -> dragonrider (primary role in Pern). Use for role names, permissions, and classes."
+
+notes:
+  - "No flavor text or lore content should be generated as part of this change. This glossary is strictly a naming mapping for code, data, docs, and UI labels."
+  - "Pluralization and casing: when replacing, preserve original casing and plural form (e.g., clan -> weyr, Clan -> Weyr, clans -> weyrs)."
+  - "If a legacy term has no clear Pern analogue, add a neutral replacement or retain the legacy term; list such cases in docs/terminology-inventory.md during the inventory pass.\n"
